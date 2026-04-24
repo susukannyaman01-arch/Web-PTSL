@@ -859,6 +859,194 @@
             color: var(--gray2);
         }
 
+        /* STATUS BADGE */
+        .bk-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 9px;
+            border-radius: 20px;
+            font-size: .66rem;
+            font-weight: 700;
+            letter-spacing: .3px;
+            flex-shrink: 0;
+        }
+
+        .bk-badge.lolos {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .bk-badge.pending {
+            background: #fef9c3;
+            color: #854d0e;
+            border: 1px solid #fde047;
+        }
+
+        .bk-ket {
+            font-size: .67rem;
+            color: #92400e;
+            margin-top: 2px;
+            font-style: italic;
+        }
+
+        /* STATUS TOGGLE di area tambah berkas */
+        .bk-status-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .bk-status-label {
+            font-size: .78rem;
+            color: var(--gray2);
+            font-weight: 500;
+        }
+
+        .bk-tog {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1.5px solid var(--gray4);
+        }
+
+        .bk-tog label {
+            padding: 5px 14px;
+            font-size: .78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .15s, color .15s;
+            user-select: none;
+        }
+
+        .bk-tog input {
+            display: none;
+        }
+
+        .bk-tog input:checked+label.lolos-lbl {
+            background: #15803d;
+            color: #fff;
+        }
+
+        .bk-tog input:checked+label.pending-lbl {
+            background: #ca8a04;
+            color: #fff;
+        }
+
+        .bk-tog label:not(:last-of-type) {
+            border-right: 1.5px solid var(--gray4);
+        }
+
+        /* MODAL PENDING KETERANGAN */
+        .modal-pending-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            display: none;
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-pending-bg.on {
+            display: flex;
+        }
+
+        .modal-pending {
+            background: #fff;
+            border-radius: 14px;
+            width: min(420px, 95vw);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, .22);
+            overflow: hidden;
+            animation: mpIn .18s ease;
+        }
+
+        @keyframes mpIn {
+            from {
+                transform: scale(.93) translateY(8px);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-pending-hdr {
+            background: linear-gradient(135deg, #ca8a04, #f59e0b);
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-pending-hdr h4 {
+            font-size: .95rem;
+            margin: 0;
+        }
+
+        .modal-pending-body {
+            padding: 20px;
+        }
+
+        .modal-pending-body label {
+            display: block;
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--gray2);
+            margin-bottom: 6px;
+        }
+
+        .modal-pending-body textarea {
+            width: 100%;
+            border: 1.5px solid var(--gray4);
+            border-radius: 8px;
+            padding: 9px 11px;
+            font-family: inherit;
+            font-size: .82rem;
+            resize: vertical;
+            min-height: 90px;
+            box-sizing: border-box;
+        }
+
+        .modal-pending-body textarea:focus {
+            outline: none;
+            border-color: #ca8a04;
+        }
+
+        .modal-pending-ft {
+            padding: 0 20px 18px;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        /* LOADING OVERLAY berkas */
+        .bk-loading {
+            text-align: center;
+            padding: 24px;
+            color: var(--gray2);
+            font-size: .82rem;
+        }
+
+        .bk-loading-spin {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid var(--gray4);
+            border-top-color: var(--g1);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
         .ltw {
             background: #fff;
             border-radius: 9px;
@@ -1508,8 +1696,21 @@
                     <button class="btn bg sm" onclick="addByNIB()">＋ Tambahkan</button>
                     <div class="bkc" id="bkCnt">0 berkas</div>
                 </div>
+                <!-- Toggle Status Lolos / Pending -->
+                <div class="bk-status-row">
+                    <span class="bk-status-label">Status Berkas:</span>
+                    <div class="bk-tog">
+                        <input type="radio" name="bkStatus" id="stLolos" value="lolos" checked>
+                        <label for="stLolos" class="lolos-lbl">✅ Lolos</label>
+                        <input type="radio" name="bkStatus" id="stPending" value="pending">
+                        <label for="stPending" class="pending-lbl">⏳ Pending</label>
+                    </div>
+                    <span id="bkSyncInfo" style="font-size:.7rem;color:var(--gray2);"></span>
+                </div>
                 <div class="bkl" id="bkList">
-                    <div class="bke">Belum ada berkas</div>
+                    <div class="bk-loading" id="bkLoadingState">
+                        <span class="bk-loading-spin"></span> Memuat histori berkas...
+                    </div>
                 </div>
             </div>
         </div>
@@ -1551,6 +1752,27 @@
                 </thead>
                 <tbody id="lapB"></tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- MODAL PENDING KETERANGAN -->
+    <div class="modal-pending-bg" id="modalPendingBg">
+        <div class="modal-pending">
+            <div class="modal-pending-hdr">
+                <h4>⏳ Keterangan Pending</h4>
+                <button class="mx" onclick="closePendingModal()"
+                    style="background:rgba(255,255,255,.2);border:none;color:#fff;font-size:1rem;cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✕</button>
+            </div>
+            <div class="modal-pending-body">
+                <label for="pendingKet">Alasan / Keterangan Pending *</label>
+                <textarea id="pendingKet"
+                    placeholder="Contoh: KTP belum dilegalisir, kurang materai, dll..."></textarea>
+            </div>
+            <div class="modal-pending-ft">
+                <button class="btn bgy sm" onclick="closePendingModal()">Batal</button>
+                <button class="btn" style="background:#ca8a04;color:#fff;" onclick="confirmPending()">💾 Simpan &
+                    Tambahkan</button>
+            </div>
         </div>
     </div>
 
@@ -2632,12 +2854,111 @@
   `;
         }
 
-        // ===== BERKAS =====
-        function addBk(id) {
+        // ===== BERKAS BPN (dengan persistensi Google Sheets) =====
+        const BPN_SHEET = 'Berkas_BPN';
+        let _pendingId = null; // id sementara saat modal pending terbuka
+
+        // Cek status yang dipilih
+        function getBkStatus() {
+            const el = document.querySelector('input[name="bkStatus"]:checked');
+            return el ? el.value : 'lolos';
+        }
+
+        // Tambah berkas dengan status
+        function addBk(id, status, keterangan) {
             const d = DB.find(x => String(x._id) === String(id)); if (!d) return;
             if (berkas.find(x => String(x._id) === String(id))) { shToast('Sudah ada di berkas', 'err'); return; }
-            berkas.push(d); renBk(); bldStats(); shToast(`${d.nama} → berkas 📦`);
+            const st = status || getBkStatus();
+            const ket = keterangan || '';
+            const entry = { ...d, _status: st, _keterangan: ket, _tgl: new Date().toISOString() };
+            berkas.push(entry);
+            renBk();
+            bldStats();
+            shToast(`${d.nama} → berkas 📦 (${st === 'lolos' ? '✅ Lolos' : '⏳ Pending'})`);
+            // Kirim ke Google Sheets
+            saveBkToSheet(entry);
         }
+
+        // Simpan satu entri ke sheet Berkas_BPN
+        async function saveBkToSheet(entry) {
+            if (!gasReady()) return;
+            const info = document.getElementById('bkSyncInfo');
+            if (info) info.textContent = '⏫ Menyimpan...';
+            try {
+                const row = [
+                    entry._tgl || new Date().toISOString(),
+                    entry.nib || '',
+                    entry.nama || '',
+                    entry.blok_tanah || '',
+                    entry.luas || '',
+                    entry._status || 'lolos',
+                    entry._keterangan || ''
+                ];
+                await fetch(GAS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'insertBerkas', sheet: BPN_SHEET, row })
+                });
+                if (info) info.textContent = '✅ Tersimpan';
+                setTimeout(() => { if (info) info.textContent = ''; }, 3000);
+            } catch (e) {
+                if (info) info.textContent = '⚠️ Gagal simpan';
+            }
+        }
+
+        // Load histori berkas dari Google Sheets saat buka menu
+        async function loadBkHistory() {
+            const ls = document.getElementById('bkLoadingState');
+            if (ls) ls.style.display = 'flex';
+            if (!gasReady()) {
+                if (ls) ls.style.display = 'none';
+                renBk();
+                return;
+            }
+            try {
+                const res = await fetch(GAS_URL + `?action=getBerkas&sheet=${BPN_SHEET}`);
+                const json = await res.json();
+                if (json.data && json.data.length) {
+                    const seenNib = new Set();
+                    berkas = [];
+                    json.data.forEach(row => {
+                        // row: [tgl, nib, nama, blok, luas, status, keterangan]
+                        const nib = String(row[1] || '').trim();
+                        const nama = String(row[2] || '').trim();
+                        if (!nib && !nama) return; // skip baris kosong
+                        if (seenNib.has(nib + '|' + nama)) return; // skip duplikat
+                        seenNib.add(nib + '|' + nama);
+
+                        // Coba cari di DB untuk data lengkap
+                        // Toleransi leading zero: "00855" == "855" → bandingkan secara numerik
+                        const nibNum = parseInt(nib, 10);
+                        const d = DB.find(x => {
+                            const xnib = String(x.nib || '').trim();
+                            return xnib === nib || parseInt(xnib, 10) === nibNum;
+                        });
+                        const entry = d
+                            ? { ...d, _status: row[5] || 'lolos', _keterangan: row[6] || '', _tgl: row[0] || '' }
+                            : {
+                                _id: nib || nama, // gunakan NIB sebagai ID sementara
+                                nib: nib,
+                                nama: nama,
+                                blok_tanah: String(row[3] || ''),
+                                luas: String(row[4] || ''),
+                                _status: row[5] || 'lolos',
+                                _keterangan: row[6] || '',
+                                _tgl: row[0] || '',
+                                // field lain dibiarkan kosong
+                                pekerjaan: '', alamat: '', nik: ''
+                            };
+                        berkas.push(entry);
+                    });
+                }
+            } catch (e) {
+                console.warn('Gagal load histori berkas:', e);
+            }
+            if (ls) ls.style.display = 'none';
+            renBk();
+        }
+
         function srchBk(q) {
             const dr = document.getElementById('bkDrop');
             if (!q.trim()) { dr.style.display = 'none'; return; }
@@ -2660,10 +2981,35 @@
         <div class="did">NIB: ${d.nib || '—'} · ${d.luas ? Number(d.luas).toLocaleString('id') + ' m²' : ''}</div></div>
     </div>`).join('');
         }
+
         function addBkS(id) {
-            addBk(id);
+            const st = getBkStatus();
             document.getElementById('bkI').value = '';
             document.getElementById('bkDrop').style.display = 'none';
+            if (st === 'pending') {
+                _pendingId = id;
+                openPendingModal();
+            } else {
+                addBk(id, 'lolos', '');
+            }
+        }
+
+        // Modal Pending
+        function openPendingModal() {
+            const bg = document.getElementById('modalPendingBg');
+            if (bg) { bg.classList.add('on'); document.getElementById('pendingKet').value = ''; document.getElementById('pendingKet').focus(); }
+        }
+        function closePendingModal() {
+            const bg = document.getElementById('modalPendingBg');
+            if (bg) bg.classList.remove('on');
+            _pendingId = null;
+        }
+        function confirmPending() {
+            const ket = document.getElementById('pendingKet').value.trim();
+            if (!ket) { document.getElementById('pendingKet').focus(); shToast('Isi keterangan pending terlebih dahulu', 'err'); return; }
+            const id = _pendingId;
+            closePendingModal();
+            if (id) addBk(id, 'pending', ket);
         }
 
         // Tutup semua dropdown saat klik di luar
@@ -2702,15 +3048,30 @@
             const c = document.getElementById('bkCnt'); if (c) c.textContent = `${berkas.length} berkas`;
             const s = document.getElementById('scBk'); if (s) s.textContent = berkas.length;
             const l = document.getElementById('bkList'); if (!l) return;
-            if (!berkas.length) { l.innerHTML = '<div class="bke">Belum ada berkas</div>'; renLap(); return; }
-            l.innerHTML = berkas.map((d, i) => `<div class="bki">
+            // Sembunyikan loading state jika masih tampil
+            const ls = document.getElementById('bkLoadingState'); if (ls) ls.style.display = 'none';
+            if (!berkas.length) { l.innerHTML = '<div class="bke">Belum ada berkas ditambahkan</div>'; renLap(); return; }
+            l.innerHTML = berkas.map((d, i) => {
+                const isPending = d._status === 'pending';
+                const badge = isPending
+                    ? `<span class="bk-badge pending">⏳ Pending</span>`
+                    : `<span class="bk-badge lolos">✅ Lolos</span>`;
+                const ket = isPending && d._keterangan ? `<div class="bk-ket">📝 ${d._keterangan}</div>` : '';
+                return `<div class="bki">
     <div class="bin">${i + 1}</div>
-    <div class="bii"><div class="bim">${d.nama || '—'}</div>
-    <div class="bid">${d.pekerjaan || ''} · ${d.alamat || ''} · NIB: <strong>${d.nib || '—'}</strong></div></div>
+    <div class="bii">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="bim">${d.nama || '—'}</div>
+        ${badge}
+      </div>
+      <div class="bid">${d.pekerjaan || ''} · ${d.alamat || ''} · NIB: <strong>${d.nib || '—'}</strong></div>
+      ${ket}
+    </div>
     <div style="display:flex;gap:5px;">
       <button class="btn sm" style="background:#f0fdf4;color:#15803d;border:1px solid #86efac" onclick="showFrm('${d._id}');gv('form')">📄</button>
       <button class="btn br sm" onclick="rmBk('${d._id}')">✕</button>
-    </div></div>`).join('');
+    </div></div>`;
+            }).join('');
             renLap();
         }
         function rmBk(id) { berkas = berkas.filter(x => String(x._id) !== String(id)); renBk(); bldStats(); }
@@ -2774,7 +3135,8 @@
                 // Reset filter laporan saat masuk tab berkas
                 const ls = document.getElementById('lapSrch');
                 if (ls) ls.value = '';
-                renLap('');
+                // Selalu load ulang dari Google Sheets setiap kali buka tab berkas
+                loadBkHistory();
             }
         }
         function shToast(msg, t = '') {
